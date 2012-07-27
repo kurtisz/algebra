@@ -88,9 +88,11 @@ class BinaryOperation(Operation):
 def applyFunction(f, tup):
     if type(tup) == type(1):
         return f(tup)
+    if type(tup) == Atom:
+        return f(tup.eval())
     if len(tup) == 0:
         return f()
-    return f(*tup)
+    return f(*map(lambda x : x.eval(), tup))
 
 class Magma(object):
     '''
@@ -98,8 +100,8 @@ class Magma(object):
     '''
     
     def __init__(self, elements, function):
-        self._set = elements
-        self._operation = BinaryOperation(elements, function)
+        self._set = Set(elements)
+        self._operation = BinaryOperation(self._set, function)
     
     def add(self, a, b):
         if (not a in self._set) or (not b in self._set):

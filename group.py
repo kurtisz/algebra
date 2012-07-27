@@ -1,6 +1,6 @@
 from fractions import gcd
 from groupUtils import getInverse
-from core import Magma, NullaryOperation, Operation
+from core import Magma, NullaryOperation, Operation, Set, Atom
 
 class Loop(Magma):
     def __init__(self, elements, function, identity):
@@ -13,7 +13,7 @@ class Loop(Magma):
 class Group(Loop):
     def __init__(self, elements, function, inverseFunction, identity):
         super(Group, self).__init__(elements, function, identity)
-        self._inverse = Operation([(x) for x in elements], inverseFunction)
+        self._inverse = Operation(Set([(x) for x in elements]), inverseFunction)
         self._order = len(elements)
     
     def inverse(self, x):
@@ -21,23 +21,23 @@ class Group(Loop):
 
 class Z(Group):
     def __init__(self, n):
-        super(Z, self).__init__(range(n), lambda x, y : (x + y) % n, lambda x : (n - x) % n, 0)
+        super(Z, self).__init__([Atom(i) for i in range(n)], lambda x, y : (x + y) % n, lambda x : (n - x) % n, 0)
     
     def __str__(self):
         return "Z_{0}".format(self._order)
 
 class U(Group):
     def __init__(self, n):
-        S = [i for i in range(1,n) if gcd(i,n) == 1]
+        S = Set([Atom(i) for i in range(1,n) if gcd(i,n) == 1])
         f = lambda x, y : (x * y) % n
         self._n = n
-        super(U, self).__init__(S, f, lambda x : getInverse(x, S, f, 1), 1)
+        super(U, self).__init__(S, f, lambda x : getInverse(x, map(lambda y : y.eval(), S), f, 1), 1)
     
     def __str__(self):
         return "U_{0}".format(self._n)
 
 if __name__ == '__main__':
-    G = U(8)
+    G = U(10)
     print "Group:", G
     print "\tIdentity:", G.identity()
     print "\tInverses:"

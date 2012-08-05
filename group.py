@@ -86,6 +86,22 @@ class Group(Magma):
     
     def __eq__(self, other):
         return other._domain == self._domain and other._operation == self._operation
+    
+    def order(self, a):
+        c = a
+        order = 1
+        while c != self.identity() and order < len(self):
+            c = self.add(c, a)
+            order += 1
+        return order
+    
+    def generateSubgroup(self, a):
+        elements = []
+        c = a
+        while not c in elements:
+            elements.append(c)
+            c = self.add(c, a)
+        return Group(elements, lambda x, y : self.add(x, y))
 
 class Integers(Group):
     def __init__(self):

@@ -40,3 +40,13 @@ class DirectSum(Ring):
         for R in self._rings[1:]:
             s += " + " + str(R)
         return s
+
+class FactorRing(Ring):
+    def __init__(self, R, S):
+        self._R = R
+        self._S = S
+        function = lambda x, y : [a for a in cosets if self._R.multiply(x[0], y[0]) in a[1]][0]
+        super(FactorRing, self).__init__(group.FactorGroup(R, S), function)
+    
+    def __str__(self):
+        return str(self._R) + "/" + str(self._S)

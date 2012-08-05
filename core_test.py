@@ -1,5 +1,5 @@
 import pytest
-from core import Operation, NullaryOperation, UnaryOperation, BinaryOperation
+from core import InfiniteSet, Integers, NaturalNumbers, PositiveIntegers, RealNumbers, FiniteMapping, InfiniteMapping, Operation, NullaryOperation, UnaryOperation, BinaryOperation
 
 class TestOperation:
     @classmethod
@@ -48,3 +48,86 @@ class TestBinaryOperation:
     def test_BadArityRaisesTypeException(self):
         with pytest.raises(TypeError):
             BinaryOperation([1,2,3,4], lambda x : x)
+
+class TestIntegers:
+    def test_IntegersPositiveValue(self):
+        assert 5 in Integers
+    
+    def test_IntegersZero(self):
+        assert 0 in Integers
+    
+    def test_IntegersNegativeValue(self):
+        assert -10 in Integers
+    
+    def test_IntegersBadType(self):
+        assert not 3.14 in Integers
+
+class TestPositiveIntegers:
+    def test_PositiveIntegersPositiveValue(self):
+        assert 5 in PositiveIntegers
+    
+    def test_PositiveIntegersZero(self):
+        assert not 0 in PositiveIntegers
+    
+    def test_PositiveIntegersNegativeValue(self):
+        assert not -10 in PositiveIntegers
+    
+    def test_PositiveIntegersBadType(self):
+        assert not 3.14 in PositiveIntegers
+
+class TestNaturalNumbers:
+    def test_NaturalNumbersPositiveValue(self):
+        assert 5 in NaturalNumbers
+    
+    def test_NaturalNumbersZero(self):
+        assert 0 in NaturalNumbers
+    
+    def test_NaturalNumbersNegativeValue(self):
+        assert not -10 in NaturalNumbers
+    
+    def test_NaturalNumbersBadType(self):
+        assert not 3.14 in NaturalNumbers
+
+class TestRealNumbers:
+    def test_RealNumbersPositiveValue(self):
+        assert 5 in RealNumbers
+    
+    def test_RealNumbersZero(self):
+        assert 0 in RealNumbers
+    
+    def test_RealNumbersNegativeValue(self):
+        assert -10 in RealNumbers
+    
+    def test_RealNumbersBadType(self):
+        assert 3.14 in RealNumbers
+    
+    def test_RealNumbersBadType(self):
+        assert not "3" in RealNumbers
+
+class TestFiniteMapping:
+    @classmethod
+    def setup_class(self):
+        self._mapping = FiniteMapping([(3,),(4,),(5,)], lambda x : x + 3)
+        
+    def test_DomainElementValue(self):
+        assert 7 == self._mapping.eval((4,))
+    
+    def test_NonDomainElementException(self):
+        with pytest.raises(ValueError):
+            self._mapping.eval((8,))
+    
+    def test_BadArityException(self):
+        with pytest.raises(TypeError):
+            FiniteMapping([(3,), (4,), (5,)], lambda x, y : x + y)
+
+class TestInfiniteMapping:
+    @classmethod
+    def setup_class(self):
+        self._mapping = InfiniteMapping(InfiniteSet(lambda x : x[0] in Integers and x[1] in Integers), lambda x, y : (x + y) % 5)
+    
+    def test_DomainElementValue(self):
+        assert 2 == self._mapping.eval((8,9))
+    
+    def test_NonDomainElementException(self):
+        with pytest.raises(ValueError):
+            self._mapping.eval(3.14)

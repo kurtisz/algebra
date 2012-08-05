@@ -1,5 +1,6 @@
 from fractions import gcd
 from itertools import product
+import core
 from core import NullaryOperation, UnaryOperation, BinaryOperation
 
 class Magma(object):
@@ -8,7 +9,10 @@ class Magma(object):
             for b in elements:
                 if not function(a, b) in elements:
                     raise ValueError("({0}, {1}) -> {2} is not closed".format(a, b, function(a, b)))
-        self._domain = set(elements)
+        try:
+            self._domain = set(elements)
+        except:
+            self._domain = elements
         self._operation = BinaryOperation(self._domain, function)
         
     def __iter__(self):
@@ -64,6 +68,34 @@ class Group(Magma):
     
     def identity(self):
         return self._e.eval()
+    
+    def isSubgroup(self, H):
+        if len(H) > len(self):
+            return False
+        if len(H) == len(self):
+            return H == self
+        for a in H:
+            if not a in self._domain:
+                return False
+        return True
+        ''' Having trouble proving equality of operations
+            Need a way to have an operation from Integers -> subset of Integers (for the mod operations, for example)
+            Then need to be able to prove equality
+        '''
+        return H._operation == self._operation
+    
+    def __eq__(self, other):
+        return other._domain == self._domain and other._operation == self._operation
+
+class Integers(Group):
+    def __init__(self):
+        super(Z, self).__init__(core.Integers, lambda x, y : x + y)
+    
+    def __str__(self):
+        return "Z"
+    
+    def __eq__(self, other):
+        return type(other) == type(self)
 
 class Z(Group):
     def __init__(self, n):
@@ -97,3 +129,28 @@ class DirectSum(Group):
         for G in self._groups[1:]:
             s += " + " + str(G)
         return s
+
+def getCosets(G, H):
+    foundCosets = []
+    cosets = []
+    for a in G:
+        aCoset = set([G.add(a, h) for h in H])
+        if aCoset in foundCosets:
+            coset = [c for c in cosets if c[2] == aCoset][0]
+            coset[1].add(a)
+        else:
+            foundCosets.append(aCoset)
+            cosets.append([a, set([a]), aCoset])
+    return map(lambda x : tuple(x), cosets)
+
+class FactorGroup(Group):
+    def __init__(self, G, H):
+        if not G.isSubgroup(H):
+            raise ValueError("{0} is not a subgroup of {1}".format(H, G))
+        self._G = G
+        self._H = H
+        cosets = getCosets(G, H)
+        super(FactorGroup, self).__init__(cosets, lambda x, y : [a for a in cosets if self._G.add(x[0], y[0]) in a[1]][0])
+    
+    def __str__(self):
+        return str(self._G) + " / " + str(self._H)

@@ -1,18 +1,69 @@
 from fractions import gcd
 
-class Operation(object):
+Infinity = float("inf")
+
+class InfiniteSet(object):
+    def __init__(self, contains):
+        if not contains.func_code.co_argcount == 1:
+            raise TypeError("Contains function must accept one argument")
+        self._contains = contains
+    
+    def __contains__(self, x):
+        try:
+            return self._contains(x)
+        except:
+            return False
+    
+    def __len__(self):
+        return Infinity
+
+Integers = InfiniteSet(lambda x : type(x) == int)
+PositiveIntegers = InfiniteSet(lambda x : x in Integers and x > 0)
+NaturalNumbers = InfiniteSet(lambda x : x in Integers and x >= 0)
+RealNumbers = InfiniteSet(lambda x : x in Integers or type(x) == float)
+
+class FiniteMapping(object):
     def __init__(self, domain, function):
-        self._mapping = {}
-        self._arity = function.func_code.co_argcount
         for x in domain:
-            if len(x) != self._arity:
+            if len(x) != function.func_code.co_argcount:
                 raise TypeError("Function has different arity than domain element")
-            self._mapping[x] = function(*x)
+        self._domain = domain
+        self._function = function
     
     def eval(self, x):
-        if not self._mapping.has_key(x):
+        if x in self._domain:
+            return self._function(*x)
+        else:
             raise ValueError("{0} not in domain".format(x))
-        return self._mapping[x]
+    
+    def __eq__(self, other):
+        return self._mapping == other._mapping
+
+class InfiniteMapping(object):
+    def __init__(self, domain, function):
+        self._domain = domain
+        self._function = function
+    
+    def eval(self, x):
+        if not x in self._domain:
+            raise ValueError("{0} not in domain".format(x))
+        return self._function(*tuple(x))
+    
+    def __eq__(self, other):
+        return False
+
+class Operation(object):
+    def __init__(self, domain, function):
+        if len(domain) < Infinity:
+            self._mapping = FiniteMapping(domain, function)
+        else:
+            self._mapping = InfiniteMapping(domain, function)
+    
+    def eval(self, x):
+        return self._mapping.eval(x)
+    
+    def __eq__(self, other):
+        return self._mapping == other._mapping
 
 class NullaryOperation(Operation):
     def __init__(self, value):

@@ -128,3 +128,8 @@ class TestDirectSum:
         y = (2, 1)
         z = ((x[0] + y[0]) % self._n1, (x[1] + y[1]) % self._n2)
         assert self._z5Crossz2.add(x, y) == z
+
+class TestFactorGroup:
+    @classmethod
+    def setup_class(self):
+        pass

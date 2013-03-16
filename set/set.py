@@ -26,7 +26,7 @@ class FiniteSet(Set):
         return len(self._elements)
     
     def __str__(self):
-        return str(self._elements)
+        return '{' + str(self._elements)[1:-1] + '}'
 
 class InfiniteSet(Set):
     def __len__(self):

@@ -1,31 +1,7 @@
 from group import FiniteGroup
-from operation.operation import NullaryOperation, UnaryOperation, BinaryOperation
+from operation.operation_factory import OperationFactory
 
 class FiniteDirectSum(FiniteGroup):
-    class ElementwiseInversion(UnaryOperation):
-        def __init__(self, S, *groups):
-            self._set = S
-            self._groups = groups
-        
-        def eval(self, *args):
-            x = self.get_arguments(args)[0]
-            return tuple([self._groups[i].invert(x[i]) for i in range(len(self._groups))])
-        
-        def get_set(self):
-            return self._set
-        
-    class ElementwiseAddition(BinaryOperation):
-        def __init__(self, S, *groups):
-            self._set = S
-            self._groups = groups
-            
-        def eval(self, *args):
-            x, y = self.get_arguments(*args)
-            return tuple([self._groups[i].eval(x[i], y[i]) for i in range(len(self._groups))])
-    
-        def get_set(self):
-            return self._set
-        
     def __init__(self, *groups):
         elements = [[]]
         for group in groups:
@@ -38,10 +14,12 @@ class FiniteDirectSum(FiniteGroup):
         self._groups = groups
     
     def invert(self, x):
-        return FiniteDirectSum.ElementwiseInversion(self, *self._groups).eval(*x)
+        invX = lambda x : tuple([self._groups[i].invert(x[i]) for i in range(len(self._groups))])
+        return OperationFactory.create_operation(1, invX, self).eval(x)
     
     def get_identity(self):
-        return NullaryOperation(tuple([self._groups[i].get_identity() for i in range(len(self._groups))])).eval()
+        return OperationFactory.create_operation(0, lambda : tuple([self._groups[i].get_identity() for i in range(len(self._groups))])).eval()
     
     def eval(self, x, y):
-        return FiniteDirectSum.ElementwiseAddition(self, *self._groups).eval(x, y)
+        addXY = lambda x, y : tuple([self._groups[i].eval(x[i], y[i]) for i in range(len(self._groups))])
+        return OperationFactory.create_operation(2, addXY, self).eval(x, y)

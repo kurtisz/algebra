@@ -24,25 +24,3 @@ class Operation(object):
         if False in argument_membership:
             raise ValueError("Arguments to operation " + str(args[argument_membership.index(False)]) + " not a member of the domain")
         return args
-
-class NullaryOperation(Operation):
-    def __init__(self, value):
-        self._value = value
-    
-    def eval(self, *args):
-        self.get_arguments(*args)
-        return self._value
-    
-    def arity(self):
-        return 0
-    
-    def get_set(self):
-        return set()
-
-class UnaryOperation(Operation):
-    def arity(self):
-        return 1
-
-class BinaryOperation(Operation):
-    def arity(self):
-        return 2

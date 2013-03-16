@@ -1,4 +1,4 @@
-from operation import Operation, NullaryOperation, UnaryOperation, BinaryOperation
+from operation import Operation
 
 class OperationFactory(object):
     @staticmethod

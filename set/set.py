@@ -27,6 +27,9 @@ class FiniteSet(Set):
     
     def __str__(self):
         return '{' + str(self._elements)[1:-1] + '}'
+    
+    def remove(self, x):
+        return FiniteSet([e for e in self._elements if not e == x])
 
 class InfiniteSet(Set):
     def __len__(self):

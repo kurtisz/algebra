@@ -9,7 +9,7 @@ class Zn(FiniteRing, numeric_set.Zn):
     
     def multiply(self, x, y):
         mulXY = lambda x, y : (x * y) % len(self)
-        return OperationFactory.create_operation(2, mulXY, self).eval(x, y)
+        return OperationFactory.create_operation(mulXY, self).eval(x, y)
     
     def get_one(self):
-        return OperationFactory.create_operation(0, lambda : 1).eval()
+        return OperationFactory.create_operation(lambda : 1).eval()

@@ -33,5 +33,5 @@ class Zn(FiniteGroup, numeric_set.Zn):
     def get_identity(self):
         return NullaryOperation(0).eval()
     
-    def eval(self, *args):
-        return Zn.ModularAddition(self).eval(*args)
+    def eval(self, x, y):
+        return Zn.ModularAddition(self).eval(x, y)

@@ -9,10 +9,10 @@ class Group(object):
         '''Return the identity element'''
         raise NotImplementedError("Group has not implemented get_identity")
     
-    def eval(self, *args):
+    def eval(self, x, y):
         '''
             Evaluate the group operation on the arguments
-            Raises a ValueError if x is not in the domain
+            Raises a ValueError if x, y not in the domain
         '''
         raise NotImplementedError("Group has not implemented evaluator")
 

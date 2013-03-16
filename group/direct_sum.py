@@ -14,7 +14,7 @@ class FiniteDirectSum(FiniteGroup):
         def get_set(self):
             return self._set
         
-    class ElementwiseOperation(BinaryOperation):
+    class ElementwiseAddition(BinaryOperation):
         def __init__(self, S, *groups):
             self._set = S
             self._groups = groups
@@ -43,5 +43,5 @@ class FiniteDirectSum(FiniteGroup):
     def get_identity(self):
         return NullaryOperation(tuple([self._groups[i].get_identity() for i in range(len(self._groups))])).eval()
     
-    def eval(self, *args):
-        return FiniteDirectSum.ElementwiseOperation(self, *self._groups).eval(*args)
+    def eval(self, x, y):
+        return FiniteDirectSum.ElementwiseAddition(self, *self._groups).eval(x, y)

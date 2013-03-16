@@ -3,6 +3,8 @@ from operation.operation_factory import OperationFactory
 
 class FiniteDirectSum(FiniteGroup):
     def __init__(self, *groups):
+        if len(groups) < 2:
+            raise ValueError("Direct sum must be composed of at least two groups")
         elements = [[]]
         for group in groups:
             new_elements = []

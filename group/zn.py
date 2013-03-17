@@ -1,15 +1,11 @@
-from group import FiniteGroup
 from operation.operation_factory import OperationFactory
+from group_factory import FiniteGroupFactory
 from set import numeric_set
 
-class Zn(FiniteGroup, numeric_set.Zn):
-    def invert(self, x):
-        invX = lambda x : (-x) % len(self)
-        return OperationFactory.create_operation(invX, self).eval(x)
-    
-    def get_identity(self):
-        return OperationFactory.create_operation(lambda : 0).eval()
-    
-    def eval(self, x, y):
-        addXY = lambda x, y : (x + y) % len(self)
-        return OperationFactory.create_operation(addXY, self).eval(x, y)
+def Zn(n):
+    '''
+        Group of integers under addition modulo n
+    '''
+    addXY = lambda x, y : (x + y) % n
+    add_op = OperationFactory.create_operation(addXY, numeric_set.Zn(n))
+    return FiniteGroupFactory.create_group(add_op.get_set(), add_op)

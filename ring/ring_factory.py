@@ -4,7 +4,7 @@ from operation.operation_factory import OperationFactory
 
 class FiniteRingFactory(object):
     @staticmethod
-    def create_ring(S, add_op, mult_op):
+    def create_ring(add_group, mult_op):
         '''
             Return the ring defined by the
             set S over binary additive operation add_op
@@ -13,8 +13,8 @@ class FiniteRingFactory(object):
             Raises a TypeError if (S, add_op) is not a group
             Raises a TypeError if (S \ {0}, mult_op) is not a group
         '''
-        add_group = FiniteGroupFactory.create_group(S, add_op)
-        mult_group = FiniteGroupFactory.create_group(S.remove(add_group.get_identity()), mult_op)
+        zero = add_group.get_identity()
+        mult_group = FiniteGroupFactory.create_group(add_group.remove(zero), mult_op)
         
         class CustomRing(FiniteRing):
             def get_additive_group(self):
@@ -35,4 +35,19 @@ class FiniteRingFactory(object):
             def get_one(self):
                 return mult_group.get_identity()
         
-        return CustomRing(S)
+        return CustomRing(add_group)
+
+    @staticmethod
+    def _has_inverses(S, op):
+        for x in S:
+            if not FiniteGroupFactory._has_inverse(x, S, op):
+                return False
+        return True
+    
+    @staticmethod
+    def _has_inverse(x, S, op):
+        try:
+            FiniteGroupFactory._get_inverse(x, S, op)
+            return True
+        except ValueError:
+            return False

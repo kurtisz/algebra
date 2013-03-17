@@ -1,4 +1,4 @@
-from group import FiniteGroup
+from group import FiniteGroup, FiniteAbelianGroup
 from operation.operation_factory import OperationFactory
 
 class FiniteGroupFactory(object):
@@ -15,7 +15,7 @@ class FiniteGroupFactory(object):
                 3.  Identity element e in S (e + x = x + e = x)
                 4.  Inverses -s for all s in S (s + (-s) = ((-s) + s) = e)
         '''
-        if op.arity() != 2:
+        if not op.arity() == 2:
             raise TypeError("Group operation must be binary")
         if not FiniteGroupFactory._is_closed(S, op):
             raise TypeError("Group operation must be closed over S")
@@ -26,7 +26,12 @@ class FiniteGroupFactory(object):
         if not FiniteGroupFactory._has_inverses(S, op):
             raise TypeError("All elements of S must have inverses for the given group operation")
         
-        class CustomFiniteGroup(FiniteGroup):
+        group_type = FiniteGroup
+        
+        if FiniteGroupFactory._is_abelian(S, op):
+            group_type = FiniteAbelianGroup
+        
+        class CustomFiniteGroup(group_type):
             def invert(self, x):
                 invX = lambda x : FiniteGroupFactory._get_inverse(x, S, op)
                 return OperationFactory.create_operation(invX, S).eval(x)
@@ -99,3 +104,11 @@ class FiniteGroupFactory(object):
             if op.eval(x, y) == op.eval(y, x) and op.eval(x, y) == e:
                 return y
         raise ValueError("Could not find inverse for given element")
+    
+    @staticmethod
+    def _is_abelian(S, op):
+        for x in S:
+            for y in S:
+                if not op.eval(x, y) == op.eval(y, x):
+                    return False
+        return True

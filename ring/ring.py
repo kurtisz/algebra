@@ -26,10 +26,6 @@ class Ring(object):
             Raises a ValueError if x, y not in the domain
         '''
         raise NotImplementedError("Ring has not implemented evaluator")
-    
-    def get_one(self):
-        '''Return the multiplicative identity element'''
-        raise NotImplementedError("Ring has not implemented get_identity")
 
 class FiniteRing(Ring, FiniteSet):
     def __init__(self, S):

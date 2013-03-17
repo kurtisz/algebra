@@ -15,10 +15,20 @@ class Group(object):
             Raises a ValueError if x, y not in the domain
         '''
         raise NotImplementedError("Group has not implemented evaluator")
+    
+    def is_abelian(self):
+        '''
+            Is the group Abelian (commutative)
+        '''
+        return False
 
 class FiniteGroup(Group, FiniteSet):
     def __init__(self, S):
         super(FiniteGroup, self).__init__(S)
+
+class FiniteAbelianGroup(FiniteGroup):
+    def is_abelian(self):
+        return True
 
 class InfiniteGroup(Group, InfiniteSet):
     pass
